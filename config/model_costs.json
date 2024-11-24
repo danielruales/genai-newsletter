@@ -1,9 +1,11 @@
 {
     "claude-3-sonnet-20240229": {
+        "provider": "anthropic",
         "input": 0.003,
         "output": 0.015
     },
    "claude-3-5-sonnet-20241022": {
+       "provider": "anthropic", 
         "input": 0.003,
         "output": 0.015
     } 
