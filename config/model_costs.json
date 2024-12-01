@@ -8,5 +8,8 @@
        "provider": "anthropic", 
         "input": 0.003,
         "output": 0.015
-    } 
+    },
+    "gpt-4o-mini": {
+        "provider": "openai"
+    }
 } 

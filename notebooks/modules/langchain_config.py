@@ -36,7 +36,9 @@ def get_langsmith_tracer():
 # Initialize the language model
 def get_llm_model(model_name="claude-3-5-sonnet-20241022", streaming=False, MODEL_COSTS=[]):
     llm = None
-    if MODEL_COSTS[model_name]["provider"] == 'anthropic':
+    if model_name not in MODEL_COSTS:
+        raise ValueError(f"Model {model_name} not found in the model costs")
+    elif MODEL_COSTS[model_name]["provider"] == 'anthropic':
         llm = ChatAnthropic(
             model=model_name,
             max_tokens=4096,
@@ -62,8 +64,9 @@ def get_llm_model(model_name="claude-3-5-sonnet-20241022", streaming=False, MODE
                 "ls_provider": "anthropic",
                 "ls_model_name": model_name,
                 "model_name": model_name,
-                "model_cost_per_1k_input_tokens": MODEL_COSTS[model_name]["input"],   # price per 1K input tokens
-                "model_cost_per_1k_output_tokens": MODEL_COSTS[model_name]["output"]    # price per 1K output tokens
+                # No explicit prices are needed for OpenAI models because the prices are built into LangSmith
+                # "model_cost_per_1k_input_tokens": MODEL_COSTS[model_name]["input"],   # price per 1K input tokens
+                # "model_cost_per_1k_output_tokens": MODEL_COSTS[model_name]["output"]    # price per 1K output tokens
             }
         )
     elif MODEL_COSTS[model_name]["provider"] == 'google':
