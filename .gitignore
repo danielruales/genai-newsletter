@@ -1,6 +1,12 @@
 # Ignore .DS_Store files
 .DS_Store
 
+# Milvus
+milvus_demo.db
+milvus_docs/
+.milvus_demo.db.lock
+
+
 # Queries
 queries/*.sql
 

@@ -8,7 +8,7 @@ def set_os_env_vars():
     os.environ["LANGCHAIN_API_KEY"] = os.getenv('LANGCHAIN_API_KEY')
     os.environ["LANGCHAIN_PROJECT"] = os.getenv('LANGCHAIN_PROJECT')
     os.environ["ANTHROPIC_API_KEY"] = os.getenv('ANTHROPIC_API_KEY')
-    os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY') # OpenAI API key
+    os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
     os.environ["NOTION_API_KEY"]=os.getenv('NOTION_API_KEY')
     os.environ["LIBRARY_DATABASE_ID"]=os.getenv('LIBRARY_DATABASE_ID')
     os.environ["NEON_DATABASE_URL"] = os.getenv("NEON_DATABASE_URL")
