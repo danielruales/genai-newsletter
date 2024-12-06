@@ -1,6 +1,8 @@
 from pymilvus import (
     MilvusClient,  # Milvus lite
-    connections, utility, FieldSchema, CollectionSchema, Collection, DataType
+    connections, utility, FieldSchema, CollectionSchema, Collection, DataType,
+    AnnSearchRequest,
+    WeightedRanker,
 )
 
 # Import the BGEM3EmbeddingFunction which is used to create dense vectors
@@ -88,7 +90,7 @@ class MilvusFullClient:
             ),
             FieldSchema(name="dense_vector", dtype=DataType.FLOAT_VECTOR, dim=embedding_dim),
             FieldSchema(name="sparse_vector", dtype=DataType.SPARSE_FLOAT_VECTOR),
-            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=20000),
         ]
         schema = CollectionSchema(fields)
         return schema
@@ -99,6 +101,57 @@ class MilvusFullClient:
         dense_index = {"index_type": "AUTOINDEX", "metric_type": "IP"}
         col.create_index("dense_vector", dense_index)
         col.load()
+    
+    def dense_search(self, col, query_dense_embedding, limit=10):
+        search_params = {"metric_type": "IP", "params": {}}
+        res = col.search(
+            [query_dense_embedding],
+            anns_field="dense_vector",
+            limit=limit,
+            output_fields=["text"],
+            param=search_params,
+        )[0]
+        return [hit.get("text") for hit in res]
+
+    def sparse_search(self, col, query_sparse_embedding, limit=10):
+        search_params = {
+            "metric_type": "IP",
+            "params": {},
+        }
+        res = col.search(
+            [query_sparse_embedding],
+            anns_field="sparse_vector",
+            limit=limit,
+            output_fields=["text"],
+            param=search_params,
+        )[0]
+        return [hit.get("text") for hit in res]
+
+    
+    def hybrid_search(
+        self,
+        col,
+        query_dense_embedding,
+        query_sparse_embedding,
+        sparse_weight=1.0,
+        dense_weight=1.0,
+        limit=10,
+    ):
+        dense_search_params = {"metric_type": "IP", "params": {}}
+        dense_req = AnnSearchRequest(
+            [query_dense_embedding], "dense_vector", dense_search_params, limit=limit
+        )
+        sparse_search_params = {"metric_type": "IP", "params": {}}
+        sparse_req = AnnSearchRequest(
+            [query_sparse_embedding], "sparse_vector", sparse_search_params, limit=limit
+        )
+        rerank = WeightedRanker(sparse_weight, dense_weight)
+        res = col.hybrid_search(
+            [sparse_req, dense_req], rerank=rerank, limit=limit, output_fields=["text"]
+        )[0]
+        return [hit.get("text") for hit in res]
+
+
 
 def get_dense_embedding_details(use_fp16=False, device="cpu"):
     dense_embedding_function = BGEM3EmbeddingFunction(use_fp16=use_fp16, device=device)
