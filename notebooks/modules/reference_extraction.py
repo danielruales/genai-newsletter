@@ -1,7 +1,8 @@
 def create_content_from_df(df):
     """Convert dataframe rows into formatted content string."""
-    all_content = '<START CONTEXT>\n'
+    all_content = '<articles>\n'
     all_content_list=[]
+    all_content_dict = {}
     
     for idx, row in df.iterrows():
         # Format each article with consistent structure
@@ -18,7 +19,15 @@ Type: {row['media_type']}
         # print('HERE***********', all_content_list)
         all_content += content
         all_content_list.append(content)
+        all_content_dict[idx+1] = {
+            "title": row['title'],
+            "url": row['url'],
+            "summary": row['summary'],
+            "description": row['description'],
+            "created_at": row['created_at'].strftime('%Y-%m-%d'),
+            "media_type": row['media_type'],
+            "content": content
+        }
+    all_content += '\n</articles>\n--------------------\n'
     
-    all_content += '\n<END CONTEXT>\n--------------------\n'
-    
-    return all_content, all_content_list
+    return all_content, all_content_list, all_content_dict

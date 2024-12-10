@@ -81,6 +81,10 @@ Here's the structure to follow for each newsletter:
 5. **Closing**: A call-to-action, final thought, or reminder to stay tuned for more content. Provide 3 bullet points with key takeaways.
 
 The articles and data you need for this week's edition are provided in the user prompt in the context.
+Include footnote references like [1], [2], etc., corresponding to the order the articles appear in your response.
+The first article to be referenced is footnote 1, the second article to be referenced is footnote 2, etc.
+Each footnote should be attached to each claim in the newsletter, and the footnote links should be at the bottom of the newsletter each being a bullet point.
+The footnote links should be the title and url of the article, with the url in the markdown link format.
 </SYSTEM MESSAGE>
 """
 
@@ -90,7 +94,7 @@ The articles and data you need for this week's edition are provided in the user 
 
 Please generate the newsletter using the structure and style described in the system message. Ensure the language is engaging, and provide a concise summary of each article.
 Make sure to use today's date, {current_date}.
+Formatted as markdown without '```'.
 """
     )
-
     return newsletter_prompt
